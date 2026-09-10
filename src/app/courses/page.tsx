@@ -1,10 +1,11 @@
-"use client"; 
-
+import type { Metadata } from "next";
 import SectionTitle from "@/components/SectionTitle";
-import CourseCard from "@/components/CourseCard";
 import { courses } from "@/data/courses";
 import CourseExplorer from "@/components/CourseExplorer";
 
+export const metadata: Metadata = {
+  title: "รายวิชาทั้งหมด",
+};
 
 export default function CoursesPage() {
   return (
