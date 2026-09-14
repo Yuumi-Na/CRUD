@@ -50,7 +50,7 @@ export default function BandExplorer({ bands }: BandExplorerProps) {
     band.name.toLowerCase().includes(searchText)
   );
 
-  // Derived Data: เรียงลำดับจาก visibleBands ตามค่า sortBy
+  // Derived Data
   const sortedBands = [...visibleBands].sort((a, b) => {
     if (sortBy === "name") {
       return a.name.localeCompare(b.name);

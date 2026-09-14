@@ -11,7 +11,7 @@ export default function CoursesPage() {
   return (
     <main>
       <SectionTitle />
-      <CourseExplorer courses={courses} />
+      <CourseExplorer initialCourses={courses} />
     </main>
   );
 }
