@@ -24,6 +24,7 @@ export default function CourseCard({
       </h2>
       <p>{course.credit} หน่วยกิต</p>
 
+    <div className="card-actions">
       <button
         type="button"
         className={`favorite-button ${isFavorite ? "active" : ""}`}
@@ -33,8 +34,11 @@ export default function CourseCard({
         {isFavorite ? "★ อยู่ในรายการโปรด" : "☆ เพิ่มเป็นรายการโปรด"}
       </button>
 
-      <button type="button" onClick={onEdit}>แก้ไข</button>
-      <button type="button" onClick={onDelete}>ลบ</button>
+      <div className="crud-actions">
+        <button type="button" className="edit-button" onClick={onEdit}>แก้ไข</button>
+        <button type="button" className="delete-button" onClick={onDelete}>ลบ</button>
+      </div>
+    </div>
     </article>
   );
 }

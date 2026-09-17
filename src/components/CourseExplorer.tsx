@@ -13,6 +13,7 @@ export default function CourseExplorer({ initialCourses }: CourseExplorerProps) 
   const [keyword, setKeyword] = useState("");
   const [courses, setCourses] = useState<Course[]>(initialCourses);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
   const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
   const [onlyFavorite, setOnlyFavorite] = useState(false);
 
@@ -61,7 +62,6 @@ export default function CourseExplorer({ initialCourses }: CourseExplorerProps) 
           : course
       )
     );
-    setEditingId(null);
   }
 
   function handleSave(draft: CourseDraft) {
@@ -70,6 +70,23 @@ export default function CourseExplorer({ initialCourses }: CourseExplorerProps) 
     } else {
       handleCreate(draft);
     }
+    setIsFormOpen(false);
+    setEditingId(null);
+  }
+
+  function handleOpenCreateForm() {
+    setEditingId(null);
+    setIsFormOpen(true);
+  }
+
+  function handleOpenEditForm(id: string) {
+    setEditingId(id);
+    setIsFormOpen(true);
+  }
+
+  function handleCloseForm() {
+    setIsFormOpen(false);
+    setEditingId(null);
   }
 
   const editingCourse = courses.find((course) => course.id === editingId);
@@ -107,6 +124,9 @@ export default function CourseExplorer({ initialCourses }: CourseExplorerProps) 
           >
             {onlyFavorite ? "แสดงทั้งหมด" : "แสดงเฉพาะรายการโปรด"}
           </button>
+          <button type="button" className="add-button" onClick={handleOpenCreateForm}>
+            + เพิ่มรายวิชาใหม่
+          </button>
         </div>
       </div>
 
@@ -120,19 +140,31 @@ export default function CourseExplorer({ initialCourses }: CourseExplorerProps) 
               course={course}
               isFavorite={favoriteIds.includes(course.id)}
               onToggleFavorite={handleToggleFavorite}
-              onEdit={() => setEditingId(course.id)}
+              onEdit={() => handleOpenEditForm(course.id)}
               onDelete={() => handleDelete(course.id)}
             />
           ))
         )}
       </section>
 
-      <CourseForm
-        key={editingId ?? "new"}
-        initialCourse={editingCourse}
-        onSave={handleSave}
-        onCancel={() => setEditingId(null)}
-      />
+      {isFormOpen ? (
+        <div className="modal-overlay" onClick={handleCloseForm}>
+          <div className="modal-content" onClick={(event) => event.stopPropagation()}>
+            <div className="modal-header">
+              <h2>{editingCourse ? "แก้ไขรายวิชา" : "เพิ่มรายวิชาใหม่"}</h2>
+              <button type="button" className="modal-close" onClick={handleCloseForm} aria-label="ปิด">
+                ✕
+              </button>
+            </div>
+            <CourseForm
+              key={editingId ?? "new"}
+              initialCourse={editingCourse}
+              onSave={handleSave}
+              onCancel={handleCloseForm}
+            />
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

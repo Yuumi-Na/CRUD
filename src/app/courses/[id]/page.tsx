@@ -25,12 +25,14 @@ export default async function CoursePage({ params }: CoursePageProps) {
     notFound();
   }
 
-  return (
-    <article>
+return (
+  <main className="course-detail-page">
+    <article className="course-detail">
       <h1>{course.name}</h1>
-      <p>รหัสวิชา {course.code}</p>
+      <p className="detail-code">รหัสวิชา {course.code}</p>
       <p>หน่วยกิต {course.credit}</p>
       <p>ผู้สอน {course.instructor}</p>
     </article>
-  );
+  </main>
+);
 }
