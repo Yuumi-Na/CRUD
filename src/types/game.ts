@@ -22,3 +22,4 @@ export const STATUS_LABELS: Record<GameStatus, string> = {
 };
 
 export const PLATFORM_OPTIONS = ["PC", "PlayStation", "Xbox", "Nintendo Switch", "Mobile"];
+export const STATUS_OPTIONS = Object.keys(STATUS_LABELS) as GameStatus[];

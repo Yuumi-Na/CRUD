@@ -959,9 +959,9 @@ main:has(.game-grid) > h1 {
   display: grid;
   grid-template-columns: 1fr auto;
   grid-template-areas:
-    "platform platform"
+    "platform status"
     "title    title"
-    "hours    status"
+    "hours    hours"
     "actions  actions";
   row-gap: 0.6rem;
   background: var(--white);
@@ -1034,15 +1034,87 @@ main:has(.game-grid) > h1 {
 
 @media (max-width: 700px) {
   .game-card {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr auto;
     grid-template-areas:
-      "platform"
-      "title"
-      "hours"
-      "status"
-      "actions";
+      "platform status"
+      "title    title"
+      "hours    hours"
+      "actions  actions";
     row-gap: 0.5rem;
   }
   .game-hours { padding-top: 0.5rem; border-top: none; }
-  .game-status { justify-self: start; }
+}
+
+
+.game-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.game-form label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--dark-gray);
+  margin-top: 0.5rem;
+}
+
+.game-form select.form-input {
+  padding: 0.6rem 0.9rem;
+  font-family: var(--font);
+  font-size: 0.95rem;
+  border: 1px solid var(--black);
+  border-radius: 8px;
+  background: var(--white);
+  color: var(--dark-gray);
+  cursor: pointer;
+  outline: none;
+  transition: box-shadow 0.2s ease;
+}
+
+.game-form select.form-input:focus-visible {
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+}
+
+
+.modal-content .game-form {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  border: none;
+  box-shadow: none;
+}
+
+.status-select {
+  grid-area: status;
+  justify-self: end;
+  padding: 0.35rem 1.75rem 0.35rem 0.75rem;
+  font-family: var(--font);
+  font-size: 0.75rem;
+  font-weight: 500;
+  border: 1px solid var(--black);
+  border-radius: 999px;
+  background-color: var(--white);
+  color: var(--dark-gray);
+  cursor: pointer;
+
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  background-size: 12px;
+}
+
+.confirm-delete {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.confirm-delete span {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--dark-gray);
+  text-align: center;
 }

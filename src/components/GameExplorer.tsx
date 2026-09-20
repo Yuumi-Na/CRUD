@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import type { Game, GameDraft } from "@/types/game";
+import { useState, type ChangeEvent } from "react";
+import type { Game, GameDraft, GameStatus } from "@/types/game";
+import { STATUS_LABELS, STATUS_OPTIONS } from "@/types/game";
 import GameCard from "./GameCard";
 import GameForm from "./GameForm";
 
@@ -9,10 +10,23 @@ type GameExplorerProps = {
   initialGames: Game[];
 };
 
+type StatusFilter = "all" | GameStatus;
+
 export default function GameExplorer({ initialGames }: GameExplorerProps) {
   const [games, setGames] = useState<Game[]>(initialGames);
+  const [keyword, setKeyword] = useState("");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+
+  function handleKeywordChange(event: ChangeEvent<HTMLInputElement>) {
+    setKeyword(event.target.value);
+  }
+
+  function handleStatusFilterChange(event: ChangeEvent<HTMLSelectElement>) {
+    setStatusFilter(event.target.value as StatusFilter);
+  }
 
   function handleCreate(draft: GameDraft) {
     const newGame: Game = {
@@ -41,8 +55,25 @@ export default function GameExplorer({ initialGames }: GameExplorerProps) {
     );
   }
 
-  function handleDelete(id: string) {
-    setGames(games.filter((game) => game.id !== id));
+
+  function handleChangeStatus(id: string, status: GameStatus) {
+    setGames((prevGames) =>
+      prevGames.map((game) => (game.id === id ? { ...game, status } : game))
+    );
+  }
+
+
+  function handleRequestDelete(id: string) {
+    setPendingDeleteId(id);
+  }
+
+  function handleConfirmDelete(id: string) {
+    setGames((prevGames) => prevGames.filter((game) => game.id !== id));
+    setPendingDeleteId(null);
+  }
+
+  function handleCancelDelete() {
+    setPendingDeleteId(null);
   }
 
   function handleSave(draft: GameDraft) {
@@ -72,25 +103,60 @@ export default function GameExplorer({ initialGames }: GameExplorerProps) {
 
   const editingGame = games.find((game) => game.id === editingId);
 
+  // ข้อ 3: ตัวกรองสถานะ ทำงานร่วมกับคำค้นหาพร้อมกัน
+  const searchText = keyword.trim().toLowerCase();
+  const visibleGames = games.filter((game) => {
+    const matchSearch = game.title.toLowerCase().includes(searchText);
+    const matchStatus = statusFilter === "all" || game.status === statusFilter;
+    return matchSearch && matchStatus;
+  });
+
   return (
     <div>
       <div className="toolbar">
-        <span className="favorite-count">ทั้งหมด {games.length} เกม</span>
+        <input
+          className="search-input"
+          type="search"
+          aria-label="ค้นหาชื่อเกม"
+          value={keyword}
+          onChange={handleKeywordChange}
+          placeholder="ค้นหาชื่อเกม"
+        />
+
+        <select
+          className="sort-select"
+          aria-label="กรองตามสถานะ"
+          value={statusFilter}
+          onChange={handleStatusFilterChange}
+        >
+          <option value="all">ทุกสถานะ</option>
+          {STATUS_OPTIONS.map((status) => (
+            <option key={status} value={status}>{STATUS_LABELS[status]}</option>
+          ))}
+        </select>
+
         <button type="button" className="add-button" onClick={handleOpenCreateForm}>
           + เพิ่มเกมใหม่
         </button>
       </div>
 
       <section className="game-grid">
-        {games.length === 0 ? (
-          <p className="empty-state">ยังไม่มีเกมในรายการ</p>
+        {visibleGames.length === 0 ? (
+          <p className="empty-state">ไม่พบเกมที่ตรงกับเงื่อนไข</p>
         ) : (
-          games.map((game) => (
+          visibleGames.map((game) => (
             <GameCard
               key={game.id}
               game={game}
               onEdit={() => handleOpenEditForm(game.id)}
-              onDelete={() => handleDelete(game.id)}
+              onDelete={
+                pendingDeleteId === game.id
+                  ? () => handleConfirmDelete(game.id)
+                  : () => handleRequestDelete(game.id)
+              }
+              onChangeStatus={handleChangeStatus}
+              isPendingDelete={pendingDeleteId === game.id}
+              onCancelDelete={handleCancelDelete}
             />
           ))
         )}
